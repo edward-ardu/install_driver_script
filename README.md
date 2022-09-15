@@ -9,5 +9,3 @@ Now supports the mainstream bullseye
 1. temporarily does not support CM3,4, etc.
 2. imx519 downspeed temporarily no kernel version below 5.17
 
-
-Translated with www.DeepL.com/Translator (free version)
