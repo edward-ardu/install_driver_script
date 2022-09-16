@@ -79,11 +79,13 @@ initAutodetect() {
     PrintCamera=
 }
 
-# removeDtoverlay() {
-#     sudo dtoverlay -r imx519>/dev/null 2>&1
-#     sudo dtoverlay -r arducam>/dev/null 2>&1
-#     sudo dtoverlay -r arducam_64mp>/dev/null 2>&1
-# }
+removeDtoverlay() {
+    sudo dtoverlay -r imx519>/dev/null 2>&1
+    sudo dtoverlay -r arducam>/dev/null 2>&1
+    sudo dtoverlay -r arducam-pivariety>/dev/null 2>&1
+    sudo dtoverlay -r arducam_64mp>/dev/null 2>&1
+    sudo dtoverlay -r arducam-64mp>/dev/null 2>&1
+}
 
 configCheck() {
 
@@ -266,6 +268,7 @@ do
         v)  pkg_version=${OPTARG};;
         p)  package=${OPTARG};;
         d)  initAutodetect
+            # removeDtoverlay
             configCheck
             installFile
             i2cdetect -y 10 > i2c.txt

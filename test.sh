@@ -12,6 +12,7 @@ initAutodetect() {
     SenorId=
     OpenCameraName=
     BOOTCONFIG="/boot/config.txt"
+    TMP="/tmp/arducam.json"
     BIT=`getconf LONG_BIT`
     PWD_GET=`pwd`
 }
@@ -43,18 +44,23 @@ configCheck() {
         sudo dtparam i2c_vc
         sudo dtparam i2c_arm
     fi
+
+
     if [[ $(grep -c "^dtoverlay=imx519" "$BOOTCONFIG") -ne 0 \
     || $(grep -c "^dtoverlay=arducam" "$BOOTCONFIG") -ne 0 ]]; then
+        printf '{\n\t"camera":1,\t\n}\n' > "$TMP" 
         echo "You have installed our driver and it works."
         echo "If you want to redetect the camera, you need to modify the /boot/config.txt file and reboot."
         echo "Do you agree to modify the file?(y/n):"
         read USER_INPUT
         case $USER_INPUT in
         'y'|'Y')
-            echo "Changed"
+            echo "File has been changed."
             sudo sed 's/^\s*dtoverlay=imx519/#dtoverlay=imx519/g' -i $BOOTCONFIG
             sudo sed 's/^\s*dtoverlay=arducam/#dtoverlay=arducam/g' -i $BOOTCONFIG
+            sudo sed 's/^\s*dtoverlay=arducam-pivariety/#dtoverlay=arducam-pivariety/g' -i $BOOTCONFIG
             sudo sed 's/^\s*dtoverlay=arducam_64mp/#dtoverlay=arducam_64mp/g' -i $BOOTCONFIG
+            sudo sed 's/^\s*dtoverlay=arducam-64mp/#dtoverlay=arducam-64mp/g' -i $BOOTCONFIG
             
             echo "reboot now?(y/n):"
             read USER_INPUT
@@ -78,6 +84,11 @@ configCheck() {
         esac
 
     fi
+    
+    if [ -s $TMP ]; then
+        echo "Please restart the camera first."
+        exit -1
+    fi
 }
 
 installFile() {
@@ -88,12 +99,13 @@ installFile() {
 
     if [ ! -s $CAMERA_I2C_FILE_NAME ]; then
         wget -O $CAMERA_I2C_FILE_NAME $CAMERA_I2C_FILE_DOWNLOAD_LINK
+        chmod +x $CAMERA_I2C_FILE_NAME
     fi
     if [ $? -ne 0 ]; then
         echo -e "${RED}Download failed.${NC}"
         echo "Please check your network and try again."
         exit -1
-    else
+    fi
 
     if [ "$BIT" = 32 ]; then
         RPI3_GPIOVIRTBUF_FILE_DOWNLOAD_LINK="https://github.com/ArduCAM/MIPI_Camera/raw/master/RPI/utils/rpi3-gpiovirtbuf/32/rpi3-gpiovirtbuf"
@@ -110,8 +122,8 @@ installFile() {
         echo "Please check your network and try again."
         exit -1
     else
-        # chmod +x $RPI3_GPIOVIRTBUF_FILE_NAME
-        source ./camera_i2c>/dev/null 2>&1
+        chmod +x $RPI3_GPIOVIRTBUF_FILE_NAME
+        ./camera_i2c>/dev/null 2>&1
     fi
 }
 
@@ -196,10 +208,11 @@ openCamera() {
 autoDetect() {
     initAutodetect
     configCheck
+    echo 3
     installFile
     i2cdetect -y 10 > i2c.txt
     camera i2c.txt
-    # openCamera
+    openCamera
     package=${InstallName}
 }
 
