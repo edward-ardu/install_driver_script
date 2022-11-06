@@ -227,11 +227,6 @@ camera() {
             OpenCameraName="imx519"
             PrintCamera="IMX519"
             echo "Recognize that your camera is IMX519."
-        elif [ "$SenorId" = "0x41 0x36" ]; then
-            InstallName="64mp_pi_hawk_eye_kernel_driver"
-            OpenCameraName="arducam_64mp"
-            PrintCamera="64MP"
-            echo "Recognize that your camera is 64MP."
         fi
 
     fi
@@ -247,6 +242,21 @@ camera() {
                 OpenCameraName="arducam"
                 PrintCamera="Pirvarty"
                 echo "Recognize that your camera is Pirvarty"
+            fi
+        fi
+    fi
+    
+    if [ -z "$InstallName" ]; then
+
+        SenorId=$(judgeSenorId 0c 2>&1)
+        
+        judgeI2c 50
+        if [ $? -eq 0 ]; then
+            if [ "$SenorId" = "0x41 0x36" ]; then
+	    	InstallName="64mp_pi_hawk_eye_kernel_driver"
+	    	OpenCameraName="arducam_64mp"
+	    	PrintCamera="64MP"
+	    	echo "Recognize that your camera is 64MP."
             fi
         fi
     fi
