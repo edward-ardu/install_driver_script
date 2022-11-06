@@ -202,6 +202,8 @@ judgeSenorId() {
         i2ctransfer -y 10 w2@0x0c 0x01 0x03 r4
     elif [ "$1" = "1a" ]; then
         i2ctransfer -y 10 w2@0x1a 0x00 0x16 r2
+    elif [ "$1" = "50" ]; then
+    	i2ctransfer -y 10 w2@0x50 0x00 0x5E r2
     fi
 }
 
@@ -225,7 +227,7 @@ camera() {
             OpenCameraName="imx519"
             PrintCamera="IMX519"
             echo "Recognize that your camera is IMX519."
-        elif [ "$SenorId" = "0x06 0x82" ]; then
+        elif [ "$SenorId" = "0x41 0x36" ]; then
             InstallName="64mp_pi_hawk_eye_kernel_driver"
             OpenCameraName="arducam_64mp"
             PrintCamera="64MP"
