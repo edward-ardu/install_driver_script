@@ -248,7 +248,7 @@ camera() {
     
     if [ -z "$InstallName" ]; then
 
-        SenorId=$(judgeSenorId 0c 2>&1)
+        SenorId=$(judgeSenorId 50 2>&1)
         
         judgeI2c 50
         if [ $? -eq 0 ]; then
